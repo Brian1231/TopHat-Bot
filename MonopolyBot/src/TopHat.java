@@ -21,11 +21,13 @@ public class TopHat implements Bot {
 		
 		return "TopHat";
 	}
-	
+
 	public String getCommand () {
-		int balance = player.getBalance();
+		
+		
+
 		// Add your code here
-		return "balance";
+		return "roll";
 	}
 	
 	public String getDecision () {

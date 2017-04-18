@@ -22,7 +22,7 @@ public class Monopoly {
 	private boolean rollDone;
 	private int doubleCount;
 	private Bot[] bots = new Bot[NUM_PLAYERS];
-	private static final String[] BOT_NAMES = {"YourTeamName"};
+	private static final String[] BOT_NAMES = {"TopHat"};
 	
 	Monopoly (String[] args) {
 		setupBots(args);
@@ -34,8 +34,8 @@ public class Monopoly {
 	private void setupBots (String[] args) {
 		String[] botNames = new String [NUM_PLAYERS];
 		if (args.length<NUM_PLAYERS) {
-			botNames[0] = "YourTeamName";
-			botNames[1] = "YourTeamName";
+			botNames[0] = "TopHat";
+			botNames[1] = "TopHat";
 		} else {
 			for (int i=0; i<NUM_PLAYERS; i++) {
 				boolean found = false;
@@ -51,6 +51,10 @@ public class Monopoly {
 				}
 			}
 		}
+		/*int numBots = 0;
+		for(int i = 0;i<bots.length;i++){
+			if(bots[i] != null)numBots++;
+		}*/
 		for (int i=0; i<NUM_PLAYERS; i++) {
 			players.add(new Player(botNames[i],BoardPanel.TOKEN_NAME[i],i));
 			try {
@@ -72,7 +76,10 @@ public class Monopoly {
 			} catch (NoSuchMethodException ex) {
 				System.out.println("Error: Bot instantiation fail (NSME)");
 			    Thread.currentThread().interrupt();
-			}			
+			} catch (NullPointerException ex) {
+				System.out.println("Error: Null Pointer (NPE)");
+			    Thread.currentThread().interrupt();
+			}
 		}
 		return;
 	}
