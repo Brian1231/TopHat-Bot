@@ -34,7 +34,7 @@ public class Monopoly {
 	private void setupBots (String[] args) {
 		String[] botNames = new String [NUM_PLAYERS];
 		if (args.length<NUM_PLAYERS) {
-			botNames[0] = "TopHat";
+			botNames[0] = "YourTeamName";
 			botNames[1] = "YourTeamName";
 		} else {
 			for (int i=0; i<NUM_PLAYERS; i++) {

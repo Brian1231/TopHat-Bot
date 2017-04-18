@@ -9,8 +9,8 @@ import java.awt.geom.*;
 class BoardPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
-	private static final int FRAME_WIDTH = 550;    // must be even
-	private static final int FRAME_HEIGHT = 550;
+	private static final int FRAME_WIDTH = 750;    // must be even
+	private static final int FRAME_HEIGHT = 750;
 	private static final int TOKEN_RADIUS = 8;   // must be even
 	private static final Color[] PLAYER_COLORS = {Color.RED,Color.BLUE,Color.YELLOW,Color.GREEN,Color.MAGENTA,Color.WHITE};
 	public static final String[] TOKEN_NAME = {"red","blue","yellow","green","magenta","white"};

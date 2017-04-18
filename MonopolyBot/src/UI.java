@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public class UI {
 
-	private static final int FRAME_WIDTH = 1000;
-	private static final int FRAME_HEIGHT = 600;
+	private static final int FRAME_WIDTH = 1200;
+	private static final int FRAME_HEIGHT = 800;
 
 	public static final String CURRENCY = " pounds";
 	public static final String CURRENCY_SYMBOL = "£";

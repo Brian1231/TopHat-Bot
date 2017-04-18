@@ -18,13 +18,14 @@ public class TopHat implements Bot {
 	
 	
 	public String getName () {
+		
 		return "TopHat";
 	}
 	
 	public String getCommand () {
-		
+		int balance = player.getBalance();
 		// Add your code here
-		return "help";
+		return "balance";
 	}
 	
 	public String getDecision () {
