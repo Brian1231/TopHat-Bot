@@ -10,12 +10,16 @@ public class TopHat implements Bot {
 		this.board = board;
 		this.player = player;
 		this.dice = dice;
+		this.hasRolled = false;
 	}
 	
 	private BoardAPI board;
 	private PlayerAPI player;
 	private DiceAPI dice;
 	
+	private boolean hasRolled;
+	private int balance;
+	private int position;
 	
 	public String getName () {
 		
@@ -23,11 +27,37 @@ public class TopHat implements Bot {
 	}
 
 	public String getCommand () {
+		System.out.println(player.getTokenName() + " , " + balance);
+		//Slow down game
+		try {
+			Thread.sleep(1500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
+		//Update our data
+		balance = player.getBalance();
+		position = player.getPosition();
 		
+		//Roll if we havn't already
+		if(!hasRolled){
+			hasRolled = true;
+			return "roll";
+		}
+		//After we've rolled ...
+		else{
+			if (board.isProperty(position)) {
+				//On a property
+				Property p = board.getProperty(position);
+				if (!p.isOwned()) {
 
-		// Add your code here
-		return "roll";
+					return "buy";
+				}
+			}
+		}
+		hasRolled = false;
+		return "done";
+		
 	}
 	
 	public String getDecision () {
