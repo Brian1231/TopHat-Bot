@@ -51,10 +51,6 @@ public class Monopoly {
 				}
 			}
 		}
-		/*int numBots = 0;
-		for(int i = 0;i<bots.length;i++){
-			if(bots[i] != null)numBots++;
-		}*/
 		for (int i=0; i<NUM_PLAYERS; i++) {
 			players.add(new Player(botNames[i],BoardPanel.TOKEN_NAME[i],i));
 			try {

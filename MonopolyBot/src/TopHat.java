@@ -9,13 +9,11 @@ public class TopHat implements Bot {
 	TopHat (BoardAPI board, PlayerAPI player, DiceAPI dice) {
 		this.board = board;
 		this.player = player;
-		this.dice = dice;
 		this.hasRolled = false;
 	}
 
 	private BoardAPI board;
 	private PlayerAPI player;
-	private DiceAPI dice;
 
 	private boolean hasRolled;
 	private int balance;
@@ -37,7 +35,7 @@ public class TopHat implements Bot {
 
 		//Slow down game
 		try {
-			Thread.sleep(1500);
+			Thread.sleep(50);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -45,6 +43,7 @@ public class TopHat implements Bot {
 		//Update our data
 		balance = player.getBalance();
 		position = player.getPosition();
+		tileName = shortNames[position];
 		System.out.println(player.getTokenName() + " : " + balance);
 
 		//Roll if we havn't already
@@ -53,10 +52,9 @@ public class TopHat implements Bot {
 			hasRolled = true;
 			return "roll";
 		}
+		
 		//After we've rolled ...
 		else{
-			//Get current tiles short-name
-			tileName = shortNames[position];
 			//On a property, station or utility
 			if (board.isProperty(position)) {
 				Property p = board.getProperty(position);
@@ -69,6 +67,7 @@ public class TopHat implements Bot {
 						return "done";
 					}
 
+					//Price restrictions
 					if(balance >= 300){
 						if(balance > 500){
 							if(balance > 850){
@@ -90,14 +89,40 @@ public class TopHat implements Bot {
 				}
 			}
 		}
+		
+		
 		hasRolled = false;
 		return "done";
 
 	}
 
 	public String getDecision () {
-		// Add your code here
-		return "pay";
+		//Update our data
+		balance = player.getBalance();
+		position = player.getPosition();
+		
+		int houses = 0;
+		int hotels = 0;
+		int fine;
+		//Get number of buildings
+		for(Property property : player.getProperties()){
+			String siteName = shortNames[position];
+			if (board.isSite(siteName)) {
+				Site site = (Site) property;
+				houses += site.getNumHouses();
+				hotels += site.getNumHotels();
+			}
+		}
+		fine = houses*40 + hotels*115;
+		
+		if(balance > fine && balance > 200){
+			return "chance";
+		}
+		
+		else{
+			return "pay";
+		}
+			
 	}
 
 }
