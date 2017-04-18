@@ -1,4 +1,2 @@
 # TopHat Bot for playing Monopoly
-## Brian O'Leary
-## Daniel Graham
-## Conal O'Neill
+## Brian O'Leary, Daniel Graham, Conal O'Neill
