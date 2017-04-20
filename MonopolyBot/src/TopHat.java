@@ -187,6 +187,16 @@ public class TopHat implements Bot {
 			}
 		}
 
+		//Redeem our mortgaged properties
+		for(Property p : player.getProperties()){
+			//If p is mortgaged and we can afford to redeem it
+			if(p.isMortgaged() && balance > p.getMortgageRemptionPrice() + 100){ 
+				String name = toShortName(p.getName());
+				System.out.println(player.getTokenName() + "redeemed " + name);
+				return "redeem " + name;
+			}
+		}
+		
 		if(turnCount == 1000){
 			return "quit";
 		}
