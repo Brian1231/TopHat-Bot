@@ -27,6 +27,12 @@ public class TopHat implements Bot {
 			null, "mall", "electric", "whitehall", "northumberland", "marylebone", "bow", null, "marlborough", "vine", 
 			null, "strand", null, "fleet", "trafalgar", "fenchurch", "leicester", "coventry", "water", "piccadilly", 
 			null, "regent", "oxford", null, "bond", "liverpool", null, "park", null, "mayfair"};
+	
+	private String[] fullNames = {
+			"Go", "Old Kent Rd", null, "Whitechapel Rd", "Income Tax", "King's Cross Station", "The Angel Islington", null, "Euston", "Pentonville Rd",
+			"Jail", "Pall Mall", "Electric Co", "Whitehall", "Northumberland Ave", "Marylebone Station", "Bow St", null, "Marlborough St", "Vine St",
+			"Free Parking", "Strand", null, "Fleet St", "Trafalgar Sq", "Fenchurch St Station", "Leicester Sq", "Coventry St", "Water Works", "Piccadilly",
+			null, "Regent St", "Oxford St", null, "Bond St", "Liverpool St Station", null, "Park Lane", "Super Tax", "Mayfair"};
 
 
 	public String getName () {
@@ -124,11 +130,15 @@ public class TopHat implements Bot {
 					if(maxToBuild == 0)break; //Break loop if we cant afford a house
 					int buildsNeeded = 3 - currentBuildings;//Buildings needed to reach goal of 3
 					
+					//Get short name of site
+					String siteShortName = toShortName(site.getName());
+					
+					System.out.println(site.getName() + " , " + siteShortName + "--------------------------------------");
 					//Build 3 houses or less
 					if(maxToBuild <= buildsNeeded){
-						return "build " + site.getName() + " " + maxToBuild; //WRONG NAME HERE
+						return "build " + siteShortName + " " + maxToBuild; 
 					}else{
-						return "build " + site.getName() + " " + buildsNeeded; //WRONG NAME HERE
+						return "build " + siteShortName + " " + buildsNeeded; 
 					}
 				}
 
@@ -147,7 +157,8 @@ public class TopHat implements Bot {
 				try {
 					site = (Site) p;
 					if(site.hasBuildings()){ 
-						return "demolish" + site.getName() + "1";//WRONG NAME HERE
+						String name = toShortName(site.getName());
+						return "demolish" + name + "1";
 					}
 				} catch (Exception e) {}
 				balance = player.getBalance();
@@ -157,18 +168,22 @@ public class TopHat implements Bot {
 			//Mortgaging
 			//See if one property will do
 			for(Property p : player.getProperties()){
-				if(p.getMortgageValue() > debt && !p.isMortgaged()) return "mortgage" + p.getName();//WRONG NAME HERE
+				if(p.getMortgageValue() > debt && !p.isMortgaged()){
+					String name = toShortName(p.getName());
+					return "mortgage" + name;
+				}
 			}
 
 			//Mortgage cheapest first
 			for(Property p : player.getProperties()){
 				if(!p.isMortgaged()){
-					return "mortgage" + p.getName();//WRONG NAME HERE
+					String name = toShortName(p.getName());
+					return "mortgage" + name;
 				}
 			}
 		}
 
-		if(turnCount == 50){
+		if(turnCount == 1000){
 			return "quit";
 		}
 		turnCount++;
@@ -176,7 +191,18 @@ public class TopHat implements Bot {
 		return "done";
 
 	}
-
+	
+	//Converts long name to short name
+	private String toShortName(String longName){
+		int index = 0;
+		for(int i=0;i<fullNames.length;i++){
+			if(fullNames[i].equals(longName)){
+				index = i;
+			}
+		}
+		return shortNames[index];
+	}
+	
 	public String getDecision () {
 		//Update our data
 		balance = player.getBalance();
@@ -194,7 +220,7 @@ public class TopHat implements Bot {
 				hotels += site.getNumHotels();
 			}
 		}
-		fine = houses*40 + hotels*115;
+		fine = houses*40 + hotels*115; //Worst case scenario
 
 		if(balance > fine && balance > 200){
 			return "chance";
