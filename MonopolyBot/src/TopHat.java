@@ -43,7 +43,7 @@ public class TopHat implements Bot {
 
 		//Slow down game
 		try {
-			Thread.sleep(0);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -136,8 +136,10 @@ public class TopHat implements Bot {
 					//Build 3 houses or less
 					if(maxToBuild == 0 || buildsNeeded ==0)break; //Break loop if we cant afford a house
 					if(maxToBuild <= buildsNeeded){
+						System.out.println(player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
 						return "build " + siteShortName + " " + maxToBuild; 
 					}else{
+						System.out.println(player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
 						return "build " + siteShortName + " " + buildsNeeded; 
 					}
 				}
@@ -170,7 +172,8 @@ public class TopHat implements Bot {
 			for(Property p : player.getProperties()){
 				if(p.getMortgageValue() > debt && !p.isMortgaged()){
 					String name = toShortName(p.getName());
-					return "mortgage" + name;
+					System.out.println(player.getTokenName() + " mortgaged " + name);
+					return "mortgage " + name;
 				}
 			}
 
@@ -178,7 +181,8 @@ public class TopHat implements Bot {
 			for(Property p : player.getProperties()){
 				if(!p.isMortgaged()){
 					String name = toShortName(p.getName());
-					return "mortgage" + name;
+					System.out.println(player.getTokenName() + " mortgaged " + name);
+					return "mortgage " + name;
 				}
 			}
 		}
@@ -192,13 +196,14 @@ public class TopHat implements Bot {
 
 	}
 
-	//Converts long name to short name
+	//Converts long name to short name using parallel arrays
 	private String toShortName(String longName){
 		int index = 0;
 		for(int i=0;i<40;i++){
 			if(fullNames[i] != null){
 				if(fullNames[i].equals(longName)){
 					index = i;
+					break;
 				}
 			}
 		}
