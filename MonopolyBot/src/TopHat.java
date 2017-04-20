@@ -27,7 +27,7 @@ public class TopHat implements Bot {
 			null, "mall", "electric", "whitehall", "northumberland", "marylebone", "bow", null, "marlborough", "vine", 
 			null, "strand", null, "fleet", "trafalgar", "fenchurch", "leicester", "coventry", "water", "piccadilly", 
 			null, "regent", "oxford", null, "bond", "liverpool", null, "park", null, "mayfair"};
-	
+
 	private String[] fullNames = {
 			"Go", "Old Kent Rd", null, "Whitechapel Rd", "Income Tax", "King's Cross Station", "The Angel Islington", null, "Euston", "Pentonville Rd",
 			"Jail", "Pall Mall", "Electric Co", "Whitehall", "Northumberland Ave", "Marylebone Station", "Bow St", null, "Marlborough St", "Vine St",
@@ -43,7 +43,7 @@ public class TopHat implements Bot {
 
 		//Slow down game
 		try {
-			Thread.sleep(10);
+			Thread.sleep(0);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -64,7 +64,7 @@ public class TopHat implements Bot {
 			else
 				return "roll";
 		}
-		
+
 		//Roll if we havn't already
 		if(!hasRolled){
 
@@ -127,14 +127,14 @@ public class TopHat implements Bot {
 					int currentBuildings = site.getNumBuildings();//Current number of buildings on site
 					int housePrice = site.getBuildingPrice(); //Building cost
 					int maxToBuild = (balance - 100)/housePrice;// Number of houses we can afford with 100 spare
-					if(maxToBuild == 0)break; //Break loop if we cant afford a house
 					int buildsNeeded = 3 - currentBuildings;//Buildings needed to reach goal of 3
-					
+
 					//Get short name of site
 					String siteShortName = toShortName(site.getName());
-					
-					System.out.println(site.getName() + " , " + siteShortName + "--------------------------------------");
+
+					//System.out.println(site.getName() + " , " + siteShortName);
 					//Build 3 houses or less
+					if(maxToBuild == 0 || buildsNeeded ==0)break; //Break loop if we cant afford a house
 					if(maxToBuild <= buildsNeeded){
 						return "build " + siteShortName + " " + maxToBuild; 
 					}else{
@@ -191,18 +191,21 @@ public class TopHat implements Bot {
 		return "done";
 
 	}
-	
+
 	//Converts long name to short name
 	private String toShortName(String longName){
 		int index = 0;
-		for(int i=0;i<fullNames.length;i++){
-			if(fullNames[i].equals(longName)){
-				index = i;
+		for(int i=0;i<40;i++){
+			if(fullNames[i] != null){
+				if(fullNames[i].equals(longName)){
+					index = i;
+				}
 			}
 		}
+
 		return shortNames[index];
 	}
-	
+
 	public String getDecision () {
 		//Update our data
 		balance = player.getBalance();
