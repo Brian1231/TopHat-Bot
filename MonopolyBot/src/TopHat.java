@@ -43,7 +43,7 @@ public class TopHat implements Bot {
 
 		//Slow down game
 		try {
-			Thread.sleep(100);
+			Thread.sleep(10);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -61,7 +61,7 @@ public class TopHat implements Bot {
 				return "card";
 			else if(balance > 300) 
 				return "pay";
-			else{
+			else if(!hasRolled){
 				hasRolled = true;
 				return "roll";
 			}
@@ -114,6 +114,7 @@ public class TopHat implements Bot {
 			for (Property p : player.getProperties()) {
 				Site site = null;
 				try {
+
 					//Check if p is a site and we own all the color group
 					site = (Site) p;//Current site we are checking
 					int numberInColorGroup = site.getColourGroup().size();//Number of sites with this color
@@ -122,7 +123,7 @@ public class TopHat implements Bot {
 					for (Property prop : player.getProperties()) {
 						try {
 							Site site2 = (Site) prop;
-							if (site2.getColourGroup() == site.getColourGroup())
+							if (site2.getColourGroup().equals(site.getColourGroup()))
 								numberOfColourOwned++;
 						} catch (Exception e) {
 						}
@@ -131,6 +132,7 @@ public class TopHat implements Bot {
 					//Strategy is to always aim for 3 houses
 					if (numberOfColourOwned == numberInColorGroup) {
 						for (Site siteInColourGroup : site.getColourGroup().getMembers()) {
+							//System.out.println(siteInColourGroup.getName() + " , has: " + siteInColourGroup.getNumBuildings());
 							int currentBuildings = siteInColourGroup.getNumBuildings();//Current number of buildings on site
 							int housePrice = siteInColourGroup.getBuildingPrice(); //Building cost
 							int maxToBuild = (balance - 100) / housePrice;// Number of houses we can afford with 100 spare
@@ -141,15 +143,18 @@ public class TopHat implements Bot {
 							//System.out.println(site.getName() + " , " + siteShortName);
 
 							//Build 3 houses or less
-							if (maxToBuild == 0 || buildsNeeded == 0)
-								break; //Break loop if we cant afford a house
-							if (maxToBuild <= buildsNeeded) {
-								System.out.println(player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
-								return "build " + siteShortName + " " + maxToBuild;
-							} else {
-								System.out.println(player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
-								return "build " + siteShortName + " " + buildsNeeded;
-							} 
+							if (maxToBuild == 0 || buildsNeeded == 0){
+								continue;
+							}
+							else{ //Break loop if we cant afford a house
+								if (maxToBuild <= buildsNeeded) {
+									System.out.println(player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
+									return "build " + siteShortName + " " + maxToBuild;
+								} else {
+									System.out.println(player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
+									return "build " + siteShortName + " " + buildsNeeded;
+								} 
+							}
 						}
 					}
 
@@ -162,6 +167,16 @@ public class TopHat implements Bot {
 		while(balance < 0){
 			int debt = Math.abs(balance);//Our debt we need to make up
 
+			//Check for bankruptcy
+			int unmortgagedCount = 0;
+			for(Property p : player.getProperties()){
+				if(!p.isMortgaged()){
+					unmortgagedCount++;
+				}
+			}
+			balance = player.getBalance();
+			if(unmortgagedCount == 0 && balance < 0) return "bankrupt";
+			
 			//First demolish buildings, 1 at a time
 			for(Property p : player.getProperties()){
 				Site site = null;
@@ -195,15 +210,7 @@ public class TopHat implements Bot {
 				}
 			}
 
-			//Check for bankruptcy
-			int unmortgagedCount = 0;
-			for(Property p : player.getProperties()){
-				if(!p.isMortgaged()){
-					unmortgagedCount++;
-				}
-			}
-			balance = player.getBalance();
-			if(unmortgagedCount == 0 && balance < 0) return "bankrupt";
+			
 
 		}
 
@@ -212,7 +219,7 @@ public class TopHat implements Bot {
 			//If p is mortgaged and we can afford to redeem it
 			if(p.isMortgaged() && balance > p.getMortgageRemptionPrice() + 100){ 
 				String name = toShortName(p.getName());
-				System.out.println(player.getTokenName() + "redeemed " + name);
+				System.out.println(player.getTokenName() + " redeemed " + name);
 				return "redeem " + name;
 			}
 		}
