@@ -13,6 +13,7 @@ public interface PlayerAPI {
 	public int getTransaction ();
 	public int getBalance ();
 	public int getAssets ();
+	public int getNumProperties ();
 	public Property getLatestProperty ();
 	public ArrayList<Property> getProperties ();
 	public boolean isGroupOwner (Site site);
