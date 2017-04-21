@@ -17,7 +17,7 @@ public class TopHat implements Bot {
 
 	private boolean hasRolled;
 	private int balance;
-	private int assets;
+	//private int assets;
 	private int position;
 	private int turnCount = 0;
 
@@ -38,7 +38,7 @@ public class TopHat implements Bot {
 		//Update our data
 		balance = player.getBalance();
 		position = player.getPosition();
-		assets = player.getAssets();
+		//assets = player.getAssets();
 		//System.out.println(player.getTokenName() + " balance: " + balance + ", assets: " + assets);
 
 		//If we're in Jail
@@ -135,19 +135,21 @@ public class TopHat implements Bot {
 									continue;
 								}
 								else{
-									//We're rich then aim for hotels
+									//if we are rich then keep building past our ideal of 3 up to the max of 5 (4 houses + 1 hotel)
 									if(balance > 2000 && currentBuildings < 5){
 										int buildNum = 5 - currentBuildings;
 										System.out.println(player.getTokenName() + " built " + buildNum + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + buildNum;
 									}
-									//Build as much as we can up to 3
+									//Build as many as we can afford up to 3
 									else if (maxToBuild <= buildsNeeded && currentBuildings < 5) {
 										System.out.println(player.getTokenName() + " built " + maxToBuild + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + maxToBuild;
-									} else if(currentBuildings < 5){
+									} 
+									//if we can afford more than our ideal of 3, then build more up to the max
+									else if(currentBuildings < 5){
 										System.out.println(player.getTokenName() + " built " + buildsNeeded + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + buildsNeeded;
@@ -171,10 +173,13 @@ public class TopHat implements Bot {
 			int unmortgagedCount = 0;
 			for(Property p : player.getProperties()){
 				if(!p.isMortgaged()){
+					//count how many properties are not mortgaged
 					unmortgagedCount++;
 				}	
 			}
 			balance = player.getBalance();
+			
+			//if we have no properties available to mortgage and still a negative balance then declare bankruptcy
 			if (unmortgagedCount == 0 && balance < 0) {
 				System.out.println("Bankrupt");
 				return "bankrupt";
@@ -239,7 +244,8 @@ public class TopHat implements Bot {
 	}
 
 	public String getDecision () {
-		//Update our data
+
+		
 		balance = player.getBalance();
 		position = player.getPosition();
 
@@ -255,7 +261,8 @@ public class TopHat implements Bot {
 				hotels += site.getNumHotels();
 			}
 		}
-		fine = houses*40 + hotels*115; //Worst case scenario
+		
+		fine = houses*40 + hotels*115; //Worst case scenario (worst fine chance could give us)
 
 		if(balance > fine && balance > 200){
 			return "chance";
