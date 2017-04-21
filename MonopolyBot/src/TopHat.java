@@ -140,15 +140,19 @@ public class TopHat implements Bot {
 							String siteShortName = siteInColourGroup.getShortName();
 							//System.out.println(site.getName() + " , " + siteShortName);
 
-							//Build 3 houses or less
-							if (maxToBuild == 0 || buildsNeeded == 0)
-								break; //Break loop if we cant afford a house
-							if (maxToBuild <= buildsNeeded) {
-								System.out.println(player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
-								return "build " + siteShortName + " " + maxToBuild;
-							} else {
-								System.out.println(player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
-								return "build " + siteShortName + " " + buildsNeeded;
+							if (!site.isMortgaged()) {
+								//Build 3 houses or less
+								if (maxToBuild == 0 || buildsNeeded == 0)
+									break; //Break loop if we cant afford a house
+								if (maxToBuild <= buildsNeeded) {
+									System.out.println(
+											player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
+									return "build " + siteShortName + " " + maxToBuild;
+								} else {
+									System.out.println(
+											player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
+									return "build " + siteShortName + " " + buildsNeeded;
+								} 
 							} 
 						}
 					}
