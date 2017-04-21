@@ -43,7 +43,7 @@ public class TopHat implements Bot {
 
 		//Slow down game
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -104,50 +104,56 @@ public class TopHat implements Bot {
 			}
 		}
 
-		//Buildings
-		//Search for fully owned color groups
-		for(Property p : player.getProperties()){
-			Site site = null;
-			try {
-				//Check if p is a site and we own all the color group
-				site = (Site) p;//Current site we are checking
-				int numberInColorGroup = site.getColourGroup().size();//Number of sites with this color
-				int colorCount = 0; //Count sites we own with the same color
-				//Count property owned in color group
-				for(Property prop : player.getProperties()){
-					try {
-						Site site2 = (Site) prop;
-						if(site2.getColourGroup() == site.getColourGroup()) colorCount++;
-					} catch (Exception e) {}
-				}
-
-				//If we own the full color group
-				//Strategy is to always aim for 3 houses
-				if(colorCount == numberInColorGroup){
-					int currentBuildings = site.getNumBuildings();//Current number of buildings on site
-					int housePrice = site.getBuildingPrice(); //Building cost
-					int maxToBuild = (balance - 100)/housePrice;// Number of houses we can afford with 100 spare
-					int buildsNeeded = 3 - currentBuildings;//Buildings needed to reach goal of 3
-
-					//Get short name of site
-					String siteShortName = toShortName(site.getName());
-
-					//System.out.println(site.getName() + " , " + siteShortName);
-					//Build 3 houses or less
-					if(maxToBuild == 0 || buildsNeeded ==0)break; //Break loop if we cant afford a house
-					if(maxToBuild <= buildsNeeded){
-						System.out.println(player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
-						return "build " + siteShortName + " " + maxToBuild; 
-					}else{
-						System.out.println(player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
-						return "build " + siteShortName + " " + buildsNeeded; 
+		if (player.getBalance() > 100) {
+			//Buildings
+			//Search for fully owned color groups
+			for (Property p : player.getProperties()) {
+				Site site = null;
+				try {
+					//Check if p is a site and we own all the color group
+					site = (Site) p;//Current site we are checking
+					int numberInColorGroup = site.getColourGroup().size();//Number of sites with this color
+					int numberOfColourOwned = 0; //Count sites we own with the same color
+					//Count property owned in color group
+					for (Property prop : player.getProperties()) {
+						try {
+							Site site2 = (Site) prop;
+							if (site2.getColourGroup() == site.getColourGroup())
+								numberOfColourOwned++;
+						} catch (Exception e) {
+						}
 					}
+
+					//If we own the full color group
+					//Strategy is to always aim for 3 houses
+					if (numberOfColourOwned == numberInColorGroup) {
+						for (Site siteInColourGroup : site.getColourGroup().getMembers()) {
+							int currentBuildings = siteInColourGroup.getNumBuildings();//Current number of buildings on site
+							int housePrice = siteInColourGroup.getBuildingPrice(); //Building cost
+							int maxToBuild = (balance - 100) / housePrice;// Number of houses we can afford with 100 spare
+							int buildsNeeded = 3 - currentBuildings;//Buildings needed to reach goal of 3
+							
+							//Get short name of site
+							String siteShortName = siteInColourGroup.getShortName();
+							//System.out.println(site.getName() + " , " + siteShortName);
+							
+							//Build 3 houses or less
+							if (maxToBuild == 0 || buildsNeeded == 0)
+								break; //Break loop if we cant afford a house
+							if (maxToBuild <= buildsNeeded) {
+								System.out.println(player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
+								return "build " + siteShortName + " " + maxToBuild;
+							} else {
+								System.out.println(player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
+								return "build " + siteShortName + " " + buildsNeeded;
+							} 
+						}
+					}
+
+				} catch (Exception e) {
 				}
-
-			} catch (Exception e) {}
+			} 
 		}
-
-
 		//Get out of negative balance
 		balance = player.getBalance();
 		while(balance < 0){
@@ -196,7 +202,7 @@ public class TopHat implements Bot {
 				return "redeem " + name;
 			}
 		}
-		
+
 		if(turnCount == 1000){
 			return "quit";
 		}
