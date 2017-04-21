@@ -39,7 +39,7 @@ public class TopHat implements Bot {
 		balance = player.getBalance();
 		position = player.getPosition();
 		assets = player.getAssets();
-		System.out.println(player.getTokenName() + " balance: " + balance + ", assets: " + assets);
+		//System.out.println(player.getTokenName() + " balance: " + balance + ", assets: " + assets);
 
 		//If we're in Jail
 		if(player.isInJail()){
@@ -131,15 +131,23 @@ public class TopHat implements Bot {
 
 							if (!siteInColourGroup.isMortgaged()) {
 								//Build 3 houses or less
-								if (maxToBuild == 0 || buildsNeeded == 0) {
+								if ((maxToBuild == 0 || buildsNeeded == 0) && balance < 2000) {
 									continue;
 								}
 								else{
-									if (maxToBuild <= buildsNeeded) {
+									//We're rich then aim for hotels
+									if(balance > 2000 && currentBuildings < 5){
+										int buildNum = 5 - currentBuildings;
+										System.out.println(player.getTokenName() + " built " + buildNum + " on "
+												+ siteShortName);
+										return "build " + siteShortName + " " + buildNum;
+									}
+									//Build as much as we can up to 3
+									else if (maxToBuild <= buildsNeeded && currentBuildings < 5) {
 										System.out.println(player.getTokenName() + " built " + maxToBuild + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + maxToBuild;
-									} else {
+									} else if(currentBuildings < 5){
 										System.out.println(player.getTokenName() + " built " + buildsNeeded + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + buildsNeeded;
@@ -153,6 +161,7 @@ public class TopHat implements Bot {
 				}
 			} 
 		}
+		
 		//Get out of negative balance
 		balance = player.getBalance();
 		while(balance < 0){
@@ -167,6 +176,7 @@ public class TopHat implements Bot {
 			}
 			balance = player.getBalance();
 			if (unmortgagedCount == 0 && balance < 0) {
+				System.out.println("Bankrupt");
 				return "bankrupt";
 			}
 
@@ -178,6 +188,7 @@ public class TopHat implements Bot {
 					site = (Site) p;
 					if(site.hasBuildings()){ 
 						String name = site.getShortName();
+						System.out.println(player.getTokenName() + " dem 1 on " + name);
 						return "demolish " + name + " 1";
 					}
 				} catch (Exception e) {}
