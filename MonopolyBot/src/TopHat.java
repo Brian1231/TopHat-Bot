@@ -131,12 +131,12 @@ public class TopHat implements Bot {
 
 							if (!siteInColourGroup.isMortgaged()) {
 								//Build 3 houses or less
-								if ((maxToBuild == 0 || buildsNeeded == 0) && balance < 2000) {
+								if ((maxToBuild == 0 || buildsNeeded == 0) && balance < 2500) {
 									continue;
 								}
 								else{
 									//We're rich then aim for hotels
-									if(balance > 2000 && currentBuildings < 5){
+									if(balance > 2500 && currentBuildings < 5){
 										int buildNum = 5 - currentBuildings;
 										System.out.println(player.getTokenName() + " built " + buildNum + " on "
 												+ siteShortName);
@@ -147,7 +147,7 @@ public class TopHat implements Bot {
 										System.out.println(player.getTokenName() + " built " + maxToBuild + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + maxToBuild;
-									} else if(currentBuildings < 5){
+									} else if(currentBuildings < 5 && buildsNeeded > 0){
 										System.out.println(player.getTokenName() + " built " + buildsNeeded + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + buildsNeeded;
@@ -214,9 +214,6 @@ public class TopHat implements Bot {
 					return "mortgage " + name;
 				}
 			}
-
-
-
 		}
 
 		//Redeem our mortgaged properties
