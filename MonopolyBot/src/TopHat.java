@@ -43,7 +43,7 @@ public class TopHat implements Bot {
 
 		//Slow down game
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(10);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -61,8 +61,11 @@ public class TopHat implements Bot {
 				return "card";
 			else if(balance > 300) 
 				return "pay";
-			else
+			else{
+				hasRolled = true;
 				return "roll";
+			}
+				
 		}
 
 		//Roll if we havn't already
@@ -112,18 +115,18 @@ public class TopHat implements Bot {
 				//Check if p is a site and we own all the color group
 				site = (Site) p;//Current site we are checking
 				int numberInColorGroup = site.getColourGroup().size();//Number of sites with this color
-				int colorCount = 0; //Count sites we own with the same color
+				int numberOfColorOwned = 0; //Count sites we own with the same color
 				//Count property owned in color group
 				for(Property prop : player.getProperties()){
 					try {
 						Site site2 = (Site) prop;
-						if(site2.getColourGroup() == site.getColourGroup()) colorCount++;
+						if(site2.getColourGroup() == site.getColourGroup()) numberOfColorOwned++;
 					} catch (Exception e) {}
 				}
 
 				//If we own the full color group
 				//Strategy is to always aim for 3 houses
-				if(colorCount == numberInColorGroup){
+				if(numberOfColorOwned == numberInColorGroup){
 					int currentBuildings = site.getNumBuildings();//Current number of buildings on site
 					int housePrice = site.getBuildingPrice(); //Building cost
 					int maxToBuild = (balance - 100)/housePrice;// Number of houses we can afford with 100 spare
@@ -160,7 +163,7 @@ public class TopHat implements Bot {
 					site = (Site) p;
 					if(site.hasBuildings()){ 
 						String name = toShortName(site.getName());
-						return "demolish" + name + "1";
+						return "demolish " + name + " 1";
 					}
 				} catch (Exception e) {}
 				balance = player.getBalance();
@@ -185,6 +188,17 @@ public class TopHat implements Bot {
 					return "mortgage " + name;
 				}
 			}
+			
+			//Check for bankruptcy
+			int unmortgagedCount = 0;
+			for(Property p : player.getProperties()){
+				if(!p.isMortgaged()){
+					unmortgagedCount++;
+				}
+			}
+			balance = player.getBalance();
+			if(unmortgagedCount == 0 && balance < 0) return "bankrupt";
+			
 		}
 
 		//Redeem our mortgaged properties
