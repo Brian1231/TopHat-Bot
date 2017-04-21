@@ -131,25 +131,30 @@ public class TopHat implements Bot {
 
 							if (!siteInColourGroup.isMortgaged()) {
 								//Build 3 houses or less
-								if ((maxToBuild == 0 || buildsNeeded == 0) && balance < 2000) {
+								if ((maxToBuild == 0 || buildsNeeded == 0) && balance < 2500) {
 									continue;
 								}
 								else{
+									
 									//if we are rich then keep building past our ideal of 3 up to the max of 5 (4 houses + 1 hotel)
-									if(balance > 2000 && currentBuildings < 5){
+									if(balance > 2500 && currentBuildings < 5){
 										int buildNum = 5 - currentBuildings;
 										System.out.println(player.getTokenName() + " built " + buildNum + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + buildNum;
 									}
+									
 									//Build as many as we can afford up to 3
 									else if (maxToBuild <= buildsNeeded && currentBuildings < 5) {
 										System.out.println(player.getTokenName() + " built " + maxToBuild + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + maxToBuild;
+
 									} 
+									
 									//if we can afford more than our ideal of 3, then build more up to the max
-									else if(currentBuildings < 5){
+									else if(currentBuildings < 5 && buildsNeeded > 0){
+
 										System.out.println(player.getTokenName() + " built " + buildsNeeded + " on "
 												+ siteShortName);
 										return "build " + siteShortName + " " + buildsNeeded;
@@ -163,7 +168,7 @@ public class TopHat implements Bot {
 				}
 			} 
 		}
-		
+
 		//Get out of negative balance
 		balance = player.getBalance();
 		while(balance < 0){
@@ -178,7 +183,7 @@ public class TopHat implements Bot {
 				}	
 			}
 			balance = player.getBalance();
-			
+
 			//if we have no properties available to mortgage and still a negative balance then declare bankruptcy
 			if (unmortgagedCount == 0 && balance < 0) {
 				System.out.println("Bankrupt");
@@ -219,9 +224,6 @@ public class TopHat implements Bot {
 					return "mortgage " + name;
 				}
 			}
-
-
-
 		}
 
 		//Redeem our mortgaged properties
@@ -245,7 +247,7 @@ public class TopHat implements Bot {
 
 	public String getDecision () {
 
-		
+
 		balance = player.getBalance();
 		position = player.getPosition();
 
@@ -261,7 +263,7 @@ public class TopHat implements Bot {
 				hotels += site.getNumHotels();
 			}
 		}
-		
+
 		fine = houses*40 + hotels*115; //Worst case scenario (worst fine chance could give us)
 
 		if(balance > fine && balance > 200){
