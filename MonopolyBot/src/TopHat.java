@@ -22,18 +22,6 @@ public class TopHat implements Bot {
 	private String tileName = "";
 	private int turnCount = 0;
 
-	private String[] shortNames = {
-			null, "kent", null, "whitechapel", null , "kings", "angel", null, "euston", "pentonville", 
-			null, "mall", "electric", "whitehall", "northumberland", "marylebone", "bow", null, "marlborough", "vine", 
-			null, "strand", null, "fleet", "trafalgar", "fenchurch", "leicester", "coventry", "water", "piccadilly", 
-			null, "regent", "oxford", null, "bond", "liverpool", null, "park", null, "mayfair"};
-
-	private String[] fullNames = {
-			"Go", "Old Kent Rd", null, "Whitechapel Rd", "Income Tax", "King's Cross Station", "The Angel Islington", null, "Euston", "Pentonville Rd",
-			"Jail", "Pall Mall", "Electric Co", "Whitehall", "Northumberland Ave", "Marylebone Station", "Bow St", null, "Marlborough St", "Vine St",
-			"Free Parking", "Strand", null, "Fleet St", "Trafalgar Sq", "Fenchurch St Station", "Leicester Sq", "Coventry St", "Water Works", "Piccadilly",
-			null, "Regent St", "Oxford St", null, "Bond St", "Liverpool St Station", null, "Park Lane", "Super Tax", "Mayfair"};
-
 
 	public String getName () {
 		return "TopHat";
@@ -52,7 +40,6 @@ public class TopHat implements Bot {
 		balance = player.getBalance();
 		position = player.getPosition();
 		assets = player.getAssets();
-		tileName = shortNames[position];
 		System.out.println(player.getTokenName() + " balance: " + balance + ", assets: " + assets);
 
 		//If we're in Jail
@@ -173,14 +160,14 @@ public class TopHat implements Bot {
 			int debt = Math.abs(balance);//Our debt we need to make up
 
 			//Check for bankruptcy
-			int mortgagedCount = 0;
+			int unmortgagedCount = 0;
 			for(Property p : player.getProperties()){
-				if(p.isMortgaged()){
-					mortgagedCount++;
+				if(!p.isMortgaged()){
+					unmortgagedCount++;
 				}	
 			}
 			balance = player.getBalance();
-			if (mortgagedCount == player.getNumProperties() && balance < 0) {
+			if (unmortgagedCount == 0 && balance < 0) {
 				return "bankrupt";
 			}
 
@@ -191,7 +178,7 @@ public class TopHat implements Bot {
 				try {
 					site = (Site) p;
 					if(site.hasBuildings()){ 
-						String name = toShortName(site.getName());
+						String name = site.getShortName();
 						return "demolish " + name + " 1";
 					}
 				} catch (Exception e) {}
@@ -203,7 +190,7 @@ public class TopHat implements Bot {
 			//See if one property will do
 			for(Property p : player.getProperties()){
 				if(p.getMortgageValue() > debt && !p.isMortgaged()){
-					String name = toShortName(p.getName());
+					String name = p.getShortName();
 					System.out.println(player.getTokenName() + " mortgaged " + name);
 					return "mortgage " + name;
 				}
@@ -212,7 +199,7 @@ public class TopHat implements Bot {
 			//Mortgage cheapest first
 			for(Property p : player.getProperties()){
 				if(!p.isMortgaged()){
-					String name = toShortName(p.getName());
+					String name = p.getShortName();
 					System.out.println(player.getTokenName() + " mortgaged " + name);
 					return "mortgage " + name;
 				}
@@ -226,7 +213,7 @@ public class TopHat implements Bot {
 		for(Property p : player.getProperties()){
 			//If p is mortgaged and we can afford to redeem it
 			if(p.isMortgaged() && balance > p.getMortgageRemptionPrice() + 100){ 
-				String name = toShortName(p.getName());
+				String name = p.getShortName();
 				System.out.println(player.getTokenName() + " redeemed " + name);
 				return "redeem " + name;
 			}
@@ -241,21 +228,6 @@ public class TopHat implements Bot {
 
 	}
 
-	//Converts long name to short name using parallel arrays
-	private String toShortName(String longName){
-		int index = 0;
-		for(int i=0;i<40;i++){
-			if(fullNames[i] != null){
-				if(fullNames[i].equals(longName)){
-					index = i;
-					break;
-				}
-			}
-		}
-
-		return shortNames[index];
-	}
-
 	public String getDecision () {
 		//Update our data
 		balance = player.getBalance();
@@ -266,7 +238,7 @@ public class TopHat implements Bot {
 		int fine;
 		//Get number of buildings
 		for(Property property : player.getProperties()){
-			String siteName = shortNames[position];
+			String siteName = property.getShortName();
 			if (board.isSite(siteName)) {
 				Site site = (Site) property;
 				houses += site.getNumHouses();
