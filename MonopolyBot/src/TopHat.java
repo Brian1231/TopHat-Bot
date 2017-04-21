@@ -145,19 +145,22 @@ public class TopHat implements Bot {
 
 							if (!site.isMortgaged()) {
 								//Build 3 houses or less
-								if (maxToBuild == 0 || buildsNeeded == 0)
-									break; //Break loop if we cant afford a house
-								if (maxToBuild <= buildsNeeded) {
-									System.out.println(
-											player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
-									return "build " + siteShortName + " " + maxToBuild;
-								} else {
-									System.out.println(
-											player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
-									return "build " + siteShortName + " " + buildsNeeded;
-								} 
+								if (maxToBuild == 0 || buildsNeeded == 0) {
+									continue;
+								}
+								else{
+									if (maxToBuild <= buildsNeeded) {
+										System.out.println(player.getTokenName() + " built " + maxToBuild + " on "
+												+ siteShortName);
+										return "build " + siteShortName + " " + maxToBuild;
+									} else {
+										System.out.println(player.getTokenName() + " built " + buildsNeeded + " on "
+												+ siteShortName);
+										return "build " + siteShortName + " " + buildsNeeded;
+									} 
+								}
 							} 
-						}
+						} 
 					}
 
 				}catch (Exception e) {
@@ -170,15 +173,18 @@ public class TopHat implements Bot {
 			int debt = Math.abs(balance);//Our debt we need to make up
 
 			//Check for bankruptcy
-			int unmortgagedCount = 0;
+			int mortgagedCount = 0;
 			for(Property p : player.getProperties()){
-				if(!p.isMortgaged()){
-					unmortgagedCount++;
-				}
+				if(p.isMortgaged()){
+					mortgagedCount++;
+				}	
 			}
 			balance = player.getBalance();
-			if(unmortgagedCount == 0 && balance < 0) return "bankrupt";
-			
+			if (mortgagedCount == player.getNumProperties() && balance < 0) {
+				return "bankrupt";
+			}
+
+
 			//First demolish buildings, 1 at a time
 			for(Property p : player.getProperties()){
 				Site site = null;
@@ -212,7 +218,7 @@ public class TopHat implements Bot {
 				}
 			}
 
-			
+
 
 		}
 
