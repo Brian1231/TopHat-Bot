@@ -43,7 +43,11 @@ public class TopHat implements Bot {
 
 		//Slow down game
 		try {
+			<<<<<<< HEAD
 			Thread.sleep(100);
+			=======
+					Thread.sleep(10);
+			>>>>>>> branch 'master' of https://github.com/Brian1231/TopHat-Bot.git
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -61,8 +65,11 @@ public class TopHat implements Bot {
 				return "card";
 			else if(balance > 300) 
 				return "pay";
-			else
+			else{
+				hasRolled = true;
 				return "roll";
+			}
+
 		}
 
 		//Roll if we havn't already
@@ -104,6 +111,7 @@ public class TopHat implements Bot {
 			}
 		}
 
+
 		if (player.getBalance() > 100) {
 			//Buildings
 			//Search for fully owned color groups
@@ -123,7 +131,6 @@ public class TopHat implements Bot {
 						} catch (Exception e) {
 						}
 					}
-
 					//If we own the full color group
 					//Strategy is to always aim for 3 houses
 					if (numberOfColourOwned == numberInColorGroup) {
@@ -132,11 +139,11 @@ public class TopHat implements Bot {
 							int housePrice = siteInColourGroup.getBuildingPrice(); //Building cost
 							int maxToBuild = (balance - 100) / housePrice;// Number of houses we can afford with 100 spare
 							int buildsNeeded = 3 - currentBuildings;//Buildings needed to reach goal of 3
-							
+
 							//Get short name of site
 							String siteShortName = siteInColourGroup.getShortName();
 							//System.out.println(site.getName() + " , " + siteShortName);
-							
+
 							//Build 3 houses or less
 							if (maxToBuild == 0 || buildsNeeded == 0)
 								break; //Break loop if we cant afford a house
@@ -150,7 +157,7 @@ public class TopHat implements Bot {
 						}
 					}
 
-				} catch (Exception e) {
+				}catch (Exception e) {
 				}
 			} 
 		}
@@ -166,7 +173,7 @@ public class TopHat implements Bot {
 					site = (Site) p;
 					if(site.hasBuildings()){ 
 						String name = toShortName(site.getName());
-						return "demolish" + name + "1";
+						return "demolish " + name + " 1";
 					}
 				} catch (Exception e) {}
 				balance = player.getBalance();
@@ -191,6 +198,17 @@ public class TopHat implements Bot {
 					return "mortgage " + name;
 				}
 			}
+
+			//Check for bankruptcy
+			int unmortgagedCount = 0;
+			for(Property p : player.getProperties()){
+				if(!p.isMortgaged()){
+					unmortgagedCount++;
+				}
+			}
+			balance = player.getBalance();
+			if(unmortgagedCount == 0 && balance < 0) return "bankrupt";
+
 		}
 
 		//Redeem our mortgaged properties
