@@ -19,7 +19,6 @@ public class TopHat implements Bot {
 	private int balance;
 	private int assets;
 	private int position;
-	private String tileName = "";
 	private int turnCount = 0;
 
 
@@ -31,7 +30,7 @@ public class TopHat implements Bot {
 
 		//Slow down game
 		try {
-			Thread.sleep(10);
+			Thread.sleep(5);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -69,7 +68,7 @@ public class TopHat implements Bot {
 			if (board.isProperty(position)) {
 				Property p = board.getProperty(position);
 				//Property is un-owned and not a utility and check balance is greater than property price
-				if (!p.isOwned() && !board.isUtility(tileName) && balance > p.getPrice()) {
+				if (!p.isOwned() && !board.isUtility(p.getShortName()) && balance > p.getPrice()) {
 
 					//Price restrictions
 					if(balance >= 300){
@@ -80,14 +79,14 @@ public class TopHat implements Bot {
 									return "buy";
 								}
 								//850 - 1100
-								else if(board.isStation(tileName) || (p.getPrice() >= 100 && p.getPrice() <= 280))return "buy";
+								else if(board.isStation(p.getShortName()) || (p.getPrice() >= 100 && p.getPrice() <= 280))return "buy";
 							}
 							//500 - 850
-							else if(board.isStation(tileName) || (p.getPrice() >= 100 && p.getPrice() <= 200))return "buy";
+							else if(board.isStation(p.getShortName()) || (p.getPrice() >= 100 && p.getPrice() <= 200))return "buy";
 
 						}
 						//300 - 500
-						else if(board.isStation(tileName) || (p.getPrice() >= 100 && p.getPrice() <= 120))return "buy";
+						else if(board.isStation(p.getShortName()) || (p.getPrice() >= 100 && p.getPrice() <= 120))return "buy";
 
 					}
 				}
@@ -130,7 +129,7 @@ public class TopHat implements Bot {
 							//System.out.println(site.getName() + " , " + siteShortName);
 
 
-							if (!site.isMortgaged()) {
+							if (!siteInColourGroup.isMortgaged()) {
 								//Build 3 houses or less
 								if (maxToBuild == 0 || buildsNeeded == 0) {
 									continue;
