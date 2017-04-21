@@ -43,11 +43,7 @@ public class TopHat implements Bot {
 
 		//Slow down game
 		try {
-			<<<<<<< HEAD
 			Thread.sleep(100);
-			=======
-					Thread.sleep(10);
-			>>>>>>> branch 'master' of https://github.com/Brian1231/TopHat-Bot.git
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
