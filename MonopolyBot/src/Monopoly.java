@@ -4,11 +4,11 @@ import java.lang.reflect.*;
 public class Monopoly {
 
 	public static final int NUM_PLAYERS = 2;
-	
+
 	private static final int START_MONEY = 1500;
 	private static final int GO_MONEY = 200;
 	private static final int JAIL_FINE = 50;
-	
+
 	private Players players = new Players();
 	private Player currPlayer;
 	private Dice dice = new Dice();
@@ -23,14 +23,14 @@ public class Monopoly {
 	private int doubleCount;
 	private Bot[] bots = new Bot[NUM_PLAYERS];
 	private static final String[] BOT_NAMES = {"TopHat"};
-	
+
 	Monopoly (String[] args) {
 		setupBots(args);
 		ui = new UI(players, board, bots);
 		ui.display();
 		return;
 	}
-		
+
 	private void setupBots (String[] args) {
 		String[] botNames = new String [NUM_PLAYERS];
 		if (args.length<NUM_PLAYERS) {
@@ -59,27 +59,27 @@ public class Monopoly {
 				bots[i] = (Bot) botCons.newInstance(board,players.get(i),dice);
 			} catch (IllegalAccessException ex) {
 				System.out.println("Error: Bot instantiation fail (IAE)");
-			    Thread.currentThread().interrupt();
+				Thread.currentThread().interrupt();
 			} catch (InstantiationException ex) {
 				System.out.println("Error: Bot instantiation fail (IE)");
-			    Thread.currentThread().interrupt();
+				Thread.currentThread().interrupt();
 			} catch (ClassNotFoundException ex) {
 				System.out.println("Error: Bot instantiation fail (CNFE)");
-			    Thread.currentThread().interrupt();
+				Thread.currentThread().interrupt();
 			} catch (InvocationTargetException ex) {
 				System.out.println("Error: Bot instantiation fail (ITE)");
-			    Thread.currentThread().interrupt();
+				Thread.currentThread().interrupt();
 			} catch (NoSuchMethodException ex) {
 				System.out.println("Error: Bot instantiation fail (NSME)");
-			    Thread.currentThread().interrupt();
+				Thread.currentThread().interrupt();
 			} catch (NullPointerException ex) {
 				System.out.println("Error: Null Pointer (NPE)");
-			    Thread.currentThread().interrupt();
-			}
+				Thread.currentThread().interrupt();
+			}		
 		}
 		return;
 	}
-	
+
 	public void inputNames () {
 		int playerId = 0;
 		do {
@@ -88,7 +88,7 @@ public class Monopoly {
 		} while (!ui.isDone() && players.canAddPlayer());
 		return;
 	}
-	
+
 	public void giveStartMoney () {
 		for (Player p : players.get()) {
 			p.doTransaction (START_MONEY);
@@ -96,7 +96,7 @@ public class Monopoly {
 		}
 		return;
 	}
-	
+
 	public void decideStarter () {
 		Players inPlayers = new Players(players), selectedPlayers = new Players();
 		boolean tie = false;
@@ -126,7 +126,7 @@ public class Monopoly {
 		ui.display();
 		return;
 	}
-	
+
 	private void checkPassedGo () {
 		if (currPlayer.passedGo()) {
 			currPlayer.doTransaction(+GO_MONEY);
@@ -135,69 +135,69 @@ public class Monopoly {
 		}
 		return;
 	}
-	
+
 	private void cardAction (Card card) {
 		switch (card.getAction()) {
-			case CardDeck.ACT_GO_FORWARD :
-				currPlayer.moveTo(card.getDestination());
-				ui.display();
-				checkPassedGo();
-				squareArrival();
-				break;
-			case CardDeck.ACT_GO_BACKWARD:
-				currPlayer.moveTo(card.getDestination());
-				ui.display();
-				squareArrival();
-				break;						
-			case CardDeck.ACT_MOVE :
-				currPlayer.move(card.getNumSpaces());
-				ui.display();
-				squareArrival();
-				break;
-			case CardDeck.ACT_GOTO_JAIL :
-				currPlayer.goToJail();
-				ui.display();
-				rollDone = true;
-				break;
-			case CardDeck.ACT_GET_OUT_OF_JAIL:
-				currPlayer.addCard(card);
-				break;
-			case CardDeck.ACT_PAY_HOUSES :
-				int amount = currPlayer.getNumHousesOwned() * card.getHouseCost() + currPlayer.getNumHotelsOwned() * card.getHotelCost();
-				currPlayer.doTransaction(-amount);				
-				ui.displayBankTransaction(currPlayer);
-				break;
-			case CardDeck.ACT_PAY :
+		case CardDeck.ACT_GO_FORWARD :
+			currPlayer.moveTo(card.getDestination());
+			ui.display();
+			checkPassedGo();
+			squareArrival();
+			break;
+		case CardDeck.ACT_GO_BACKWARD:
+			currPlayer.moveTo(card.getDestination());
+			ui.display();
+			squareArrival();
+			break;						
+		case CardDeck.ACT_MOVE :
+			currPlayer.move(card.getNumSpaces());
+			ui.display();
+			squareArrival();
+			break;
+		case CardDeck.ACT_GOTO_JAIL :
+			currPlayer.goToJail();
+			ui.display();
+			rollDone = true;
+			break;
+		case CardDeck.ACT_GET_OUT_OF_JAIL:
+			currPlayer.addCard(card);
+			break;
+		case CardDeck.ACT_PAY_HOUSES :
+			int amount = currPlayer.getNumHousesOwned() * card.getHouseCost() + currPlayer.getNumHotelsOwned() * card.getHotelCost();
+			currPlayer.doTransaction(-amount);				
+			ui.displayBankTransaction(currPlayer);
+			break;
+		case CardDeck.ACT_PAY :
+			currPlayer.doTransaction(-card.getAmount());
+			ui.displayBankTransaction(currPlayer);
+			break;
+		case CardDeck.ACT_RECEIVE :
+			currPlayer.doTransaction(+card.getAmount());
+			ui.displayBankTransaction(currPlayer);
+			break;
+		case CardDeck.ACT_PAY_OR_CHANCE :
+			ui.inputPayOrChance(currPlayer);
+			if (ui.inputWasPay()) {
 				currPlayer.doTransaction(-card.getAmount());
 				ui.displayBankTransaction(currPlayer);
-				break;
-			case CardDeck.ACT_RECEIVE :
+			} else {
+				Card secondCard = chanceDeck.get();
+				ui.displayCard(secondCard);
+				cardAction(secondCard);
+				chanceDeck.add(secondCard);
+			}
+			break;
+		case CardDeck.ACT_GIFTS :
+			for (Player otherPlayer : players.getOtherPlayers(currPlayer)) {
 				currPlayer.doTransaction(+card.getAmount());
-				ui.displayBankTransaction(currPlayer);
-				break;
-			case CardDeck.ACT_PAY_OR_CHANCE :
-				ui.inputPayOrChance(currPlayer);
-				if (ui.inputWasPay()) {
-					currPlayer.doTransaction(-card.getAmount());
-					ui.displayBankTransaction(currPlayer);
-				} else {
-					Card secondCard = chanceDeck.get();
-					ui.displayCard(secondCard);
-					cardAction(secondCard);
-					chanceDeck.add(secondCard);
-				}
-				break;
-			case CardDeck.ACT_GIFTS :
-				for (Player otherPlayer : players.getOtherPlayers(currPlayer)) {
-					currPlayer.doTransaction(+card.getAmount());
-					otherPlayer.doTransaction(-card.getAmount());
-					ui.displayTransaction(otherPlayer, currPlayer);
-				}
-				break;
+				otherPlayer.doTransaction(-card.getAmount());
+				ui.displayTransaction(otherPlayer, currPlayer);
+			}
+			break;
 		}	
 		return;
 	}
-	
+
 	private void squareArrival () {
 		ui.displaySquare(currPlayer);
 		Square square = board.getSquare(currPlayer.getPosition());
@@ -228,7 +228,7 @@ public class Monopoly {
 		ui.display();
 		return;
 	}
-	
+
 	private void rollCommand () {
 		if (!rollDone) {
 			if (currPlayer.getBalance() >= 0) {
@@ -274,7 +274,7 @@ public class Monopoly {
 		}
 		return;
 	}
-	
+
 	private void buyCommand () {
 		if (board.getSquare(currPlayer.getPosition()) instanceof Property) {
 			Property property = (Property) board.getSquare(currPlayer.getPosition());
@@ -295,7 +295,7 @@ public class Monopoly {
 		}
 		return;
 	}
-	
+
 	private void buildCommand () {
 		Property property = ui.getInputProperty();
 		if (property.isOwned() && property.getOwner().equals(currPlayer)) {
@@ -334,7 +334,7 @@ public class Monopoly {
 		}
 		return;
 	}
-	
+
 	private void demolishCommand () {
 		Property property = ui.getInputProperty();
 		if (property.isOwned() && property.getOwner().equals(currPlayer)) {
@@ -361,7 +361,7 @@ public class Monopoly {
 		}
 		return;		
 	}
-	
+
 	private void bankruptCommand () {
 		ui.displayBankrupt(currPlayer);
 		Player tempPlayer = players.getNextPlayer(currPlayer);
@@ -374,7 +374,7 @@ public class Monopoly {
 		ui.display();
 		return;
 	}
-	
+
 	private void mortgageCommand () {
 		Property property = ui.getInputProperty();
 		if (property.isOwned() && property.getOwner().equals(currPlayer)) {
@@ -394,7 +394,7 @@ public class Monopoly {
 		}
 		return;		
 	}
-	
+
 	private void cardCommand () {
 		if (currPlayer.isInJail()) {
 			if (currPlayer.hasGetOutOfJailCard()) {
@@ -414,7 +414,7 @@ public class Monopoly {
 		}
 		return;
 	}
-	
+
 	private void payCommand () {
 		if (currPlayer.isInJail()) {
 			if (currPlayer.getBalance() >= JAIL_FINE) {
@@ -431,7 +431,7 @@ public class Monopoly {
 		}
 		return;
 	}
-	
+
 	private void redeemCommand () {
 		Property property = ui.getInputProperty();
 		if (property.isOwned() && property.getOwner().equals(currPlayer)) {
@@ -452,7 +452,7 @@ public class Monopoly {
 		}
 		return;			
 	}
-	
+
 	private void doneCommand () {
 		if (rollDone) {
 			if (currPlayer.getBalance() >= 0) {
@@ -465,7 +465,7 @@ public class Monopoly {
 		}
 		return;
 	}
-	
+
 	public void processTurn () {
 		turnFinished = false;
 		rollDone = false;
@@ -473,60 +473,60 @@ public class Monopoly {
 		do {
 			ui.inputCommand(currPlayer);
 			switch (ui.getCommandId()) {
-				case UI.CMD_ROLL :
-					rollCommand();
-					break;
-				case UI.CMD_BUY :
-					buyCommand();
-					break;
-				case UI.CMD_BALANCE :
-					ui.displayBalance(currPlayer);
-					break;
-				case UI.CMD_PROPERTY :
-					ui.displayProperty(currPlayer);
-					break;
-				case UI.CMD_BANKRUPT :
-					bankruptCommand();
-					turnFinished = true;
-					break;
-				case UI.CMD_BUILD :
-					buildCommand();
-					break;
-				case UI.CMD_DEMOLISH :
-					demolishCommand();
-					break;
-				case UI.CMD_MORTGAGE :
-					mortgageCommand();
-					break;
-				case UI.CMD_REDEEM :
-					redeemCommand();
-					break;
-				case UI.CMD_CARD :
-					cardCommand();
-					break;
-				case UI.CMD_PAY:
-					payCommand();
-					break;
-				case UI.CMD_HELP :
-					ui.displayCommandHelp();
-					break;
-				case UI.CMD_DONE :
-					doneCommand();
-					break;
-				case UI.CMD_QUIT : 
-					turnFinished = true;
-					gameOver = true;
-					break;
+			case UI.CMD_ROLL :
+				rollCommand();
+				break;
+			case UI.CMD_BUY :
+				buyCommand();
+				break;
+			case UI.CMD_BALANCE :
+				ui.displayBalance(currPlayer);
+				break;
+			case UI.CMD_PROPERTY :
+				ui.displayProperty(currPlayer);
+				break;
+			case UI.CMD_BANKRUPT :
+				bankruptCommand();
+				turnFinished = true;
+				break;
+			case UI.CMD_BUILD :
+				buildCommand();
+				break;
+			case UI.CMD_DEMOLISH :
+				demolishCommand();
+				break;
+			case UI.CMD_MORTGAGE :
+				mortgageCommand();
+				break;
+			case UI.CMD_REDEEM :
+				redeemCommand();
+				break;
+			case UI.CMD_CARD :
+				cardCommand();
+				break;
+			case UI.CMD_PAY:
+				payCommand();
+				break;
+			case UI.CMD_HELP :
+				ui.displayCommandHelp();
+				break;
+			case UI.CMD_DONE :
+				doneCommand();
+				break;
+			case UI.CMD_QUIT : 
+				turnFinished = true;
+				gameOver = true;
+				break;
 			}
 		} while (!turnFinished);
 		return;
 	}
-	
+
 	public void nextPlayer () {
 		currPlayer = players.getNextPlayer(currPlayer);
 		return;
 	}
-	
+
 	public void decideWinner () {
 		if (onlyOneNotBankrupt) {
 			ui.displayWinner(currPlayer);			
@@ -538,6 +538,7 @@ public class Monopoly {
 				if (player.getAssets() > mostAssets) {
 					playersWithMostAssets.clear(); 
 					playersWithMostAssets.add(player);
+					mostAssets = player.getAssets();
 				} else if (player.getAssets() == mostAssets) {
 					playersWithMostAssets.add(player);
 				}
@@ -550,12 +551,12 @@ public class Monopoly {
 		}
 		return;
 	}
-	
+
 	public void displayGameOver () {
 		ui.displayGameOver ();
 		return;
 	}
-	
+
 	public boolean isGameOver () {
 		return gameOver;
 	}
