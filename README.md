@@ -15,3 +15,6 @@ Our first resort to get out of negative balance is to demolish any buildings we 
 
 ### Redeeming mortgaged porperties
 Our strategy for redeeming property is to simply redeeem property that we can afford with 100 spare. We always aim to avoid having balance below 100 as to avoid trivial fines rendering us bankupt.
+
+### In Jail
+When in jail, we first check if we have a 'Get out of Jail' card and if so then we use it. We next check if our balance is greater than 300 and if so, we pay the 50 fine and get out of jail. This is to minimise our jail time early in the game. If we failed the first two checks, then we roll for doubles to get out.
