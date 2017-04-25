@@ -18,3 +18,6 @@ Our strategy for redeeming property is to simply redeeem property that we can af
 
 ### In Jail
 When in jail, we first check if we have a 'Get out of Jail' card and if so then we use it. We next check if our balance is greater than 300 and if so, we pay the 50 fine and get out of jail. This is to minimise our jail time early in the game. If we failed the first two checks, then we roll for doubles to get out.
+
+### Fine or Chance Decision
+To decide whether or not to pay the fine or take a chance card when given the choice, we first calculate the worst case scenario for taking a chance card. If we can afford to pay the worst case scenario then we take the chance option. The worst case sceanario is found by using our number of houses as the 'buikding fine' chance card will cost the most.
