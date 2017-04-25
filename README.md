@@ -1,4 +1,4 @@
-# TopHat Bot Monopoly Bot by Brian O'Leary, Daniel Graham, Conal O'Neill
+# TopHat - Monopoly Bot by Brian O'Leary, Daniel Graham, Conal O'Neill
 ## Bot algorithm description
 ### Rolling
 Our bot contains a private boolean 'hasRolled' used for checking of we have already rolled this turn. If we havn't yet rolled, then roll and update our boolean. Otherwise continue through our algorithm.
