@@ -1,3 +1,17 @@
+/*
+ *---Tophat---
+ * Brian O'Leary - 13475468
+ * Conal O'Neill - 13315756
+ * Daniel Graham - 15319536
+ * 
+ * This class is our implementation of our bot.
+ * 
+ * We have used a strategy outlined in the readme.md file to control the bot. 
+ * The bot "issues" command to the game by returning the command in string 
+ * format to the main game logic.
+ *
+ * */
+
 public class TopHat implements Bot {
 
 	// The public API of YourTeamName must not change
@@ -19,19 +33,20 @@ public class TopHat implements Bot {
 	private int balance;
 	private int position;
 
-
+	//team name
 	public String getName () {
 		return "TopHat";
 	}
 
 	public String getCommand () {
 
-		//Slow down game, for testing
-		/*try {
+		//Slow down game, for testing needed for game UI to not be lagging behind. 
+		//Remove below try catch, to run game at full speed with no UI or have a lagging UI.
+		try {
 			Thread.sleep(15);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}*/
+		}
 
 		//Update our data
 		balance = player.getBalance();
@@ -41,18 +56,17 @@ public class TopHat implements Bot {
 		if(player.isInJail()){
 			if(player.hasGetOutOfJailCard())
 				return "card";
+			//if weve more than 300 balance
 			else if(balance > 300) 
 				return "pay";
 			else if(!hasRolled){
 				hasRolled = true;
 				return "roll";
 			}
-
 		}
 
 		//Roll if we havn't already
 		if(!hasRolled){
-
 			hasRolled = true;
 			return "roll";
 		}
@@ -79,7 +93,6 @@ public class TopHat implements Bot {
 							}
 							//500 - 850
 							else if(board.isStation(p.getShortName()) || (p.getPrice() >= 100 && p.getPrice() <= 200))return "buy";
-
 						}
 						//300 - 500
 						else if(board.isStation(p.getShortName()) || (p.getPrice() >= 100 && p.getPrice() <= 120))return "buy";
@@ -96,7 +109,6 @@ public class TopHat implements Bot {
 			for (Property p : player.getProperties()) {
 				Site site = null;
 				try {
-
 					//Check if p is a site and we own all the color group
 					site = (Site) p;//Current site we are checking
 					int numberInColorGroup = site.getColourGroup().size();//Number of sites with this color
@@ -129,7 +141,6 @@ public class TopHat implements Bot {
 									continue;
 								}
 								else{
-									
 									//if we are rich then keep building past our ideal of 3 up to the max of 5 (4 houses + 1 hotel)
 									if(balance > 2500 && currentBuildings < 5){
 										int buildNum = 5 - currentBuildings;
@@ -145,7 +156,6 @@ public class TopHat implements Bot {
 									
 									//if we can afford more than our ideal of 3, then build more up to the max
 									else if(currentBuildings < 5 && buildsNeeded > 0){
-
 										//System.out.println(player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
 										return "build " + siteShortName + " " + buildsNeeded;
 									} 
@@ -185,6 +195,7 @@ public class TopHat implements Bot {
 			for(Property p : player.getProperties()){
 				Site site = null;
 				try {
+					//cast the property to a site variable
 					site = (Site) p;
 					if(site.hasBuildings()){ 
 						String name = site.getShortName();
@@ -231,6 +242,7 @@ public class TopHat implements Bot {
 
 	}
 
+		//used for fine or chance option
 	public String getDecision () {
 
 
@@ -252,7 +264,8 @@ public class TopHat implements Bot {
 
 		fine = houses*40 + hotels*115; //Worst case scenario (worst fine chance could give us)
 
-		if(balance > fine && balance > 200){
+		//if we have enough of a balance and we would be left with more than 200 after paying the fine 
+		if(balance > fine && (balance - fine) > 200){
 			return "chance";
 		}
 
