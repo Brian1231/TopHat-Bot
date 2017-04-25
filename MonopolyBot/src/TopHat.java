@@ -17,9 +17,7 @@ public class TopHat implements Bot {
 
 	private boolean hasRolled;
 	private int balance;
-	//private int assets;
 	private int position;
-	private int turnCount = 0;
 
 
 	public String getName () {
@@ -28,18 +26,16 @@ public class TopHat implements Bot {
 
 	public String getCommand () {
 
-		//Slow down game
-		try {
-			Thread.sleep(5);
+		//Slow down game, for testing
+		/*try {
+			Thread.sleep(15);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		//Update our data
 		balance = player.getBalance();
 		position = player.getPosition();
-		//assets = player.getAssets();
-		//System.out.println(player.getTokenName() + " balance: " + balance + ", assets: " + assets);
 
 		//If we're in Jail
 		if(player.isInJail()){
@@ -126,8 +122,6 @@ public class TopHat implements Bot {
 
 							//Get short name of site
 							String siteShortName = siteInColourGroup.getShortName();
-							//System.out.println(site.getName() + " , " + siteShortName);
-
 
 							if (!siteInColourGroup.isMortgaged()) {
 								//Build 3 houses or less
@@ -139,24 +133,20 @@ public class TopHat implements Bot {
 									//if we are rich then keep building past our ideal of 3 up to the max of 5 (4 houses + 1 hotel)
 									if(balance > 2500 && currentBuildings < 5){
 										int buildNum = 5 - currentBuildings;
-										System.out.println(player.getTokenName() + " built " + buildNum + " on "
-												+ siteShortName);
+										//System.out.println(player.getTokenName() + " built " + buildNum + " on " + siteShortName);
 										return "build " + siteShortName + " " + buildNum;
 									}
 									
 									//Build as many as we can afford up to 3
 									else if (maxToBuild <= buildsNeeded && currentBuildings < 5) {
-										System.out.println(player.getTokenName() + " built " + maxToBuild + " on "
-												+ siteShortName);
+										//System.out.println(player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
 										return "build " + siteShortName + " " + maxToBuild;
-
 									} 
 									
 									//if we can afford more than our ideal of 3, then build more up to the max
 									else if(currentBuildings < 5 && buildsNeeded > 0){
 
-										System.out.println(player.getTokenName() + " built " + buildsNeeded + " on "
-												+ siteShortName);
+										//System.out.println(player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
 										return "build " + siteShortName + " " + buildsNeeded;
 									} 
 								}
@@ -186,7 +176,7 @@ public class TopHat implements Bot {
 
 			//if we have no properties available to mortgage and still a negative balance then declare bankruptcy
 			if (unmortgagedCount == 0 && balance < 0) {
-				System.out.println("Bankrupt");
+				//System.out.println("Bankrupt");
 				return "bankrupt";
 			}
 
@@ -198,7 +188,7 @@ public class TopHat implements Bot {
 					site = (Site) p;
 					if(site.hasBuildings()){ 
 						String name = site.getShortName();
-						System.out.println(player.getTokenName() + " dem 1 on " + name);
+						//System.out.println(player.getTokenName() + " dem 1 on " + name);
 						return "demolish " + name + " 1";
 					}
 				} catch (Exception e) {}
@@ -211,7 +201,7 @@ public class TopHat implements Bot {
 			for(Property p : player.getProperties()){
 				if(p.getMortgageValue() > debt && !p.isMortgaged()){
 					String name = p.getShortName();
-					System.out.println(player.getTokenName() + " mortgaged " + name);
+					//System.out.println(player.getTokenName() + " mortgaged " + name);
 					return "mortgage " + name;
 				}
 			}
@@ -220,7 +210,7 @@ public class TopHat implements Bot {
 			for(Property p : player.getProperties()){
 				if(!p.isMortgaged()){
 					String name = p.getShortName();
-					System.out.println(player.getTokenName() + " mortgaged " + name);
+					//System.out.println(player.getTokenName() + " mortgaged " + name);
 					return "mortgage " + name;
 				}
 			}
@@ -231,15 +221,11 @@ public class TopHat implements Bot {
 			//If p is mortgaged and we can afford to redeem it
 			if(p.isMortgaged() && balance > p.getMortgageRemptionPrice() + 100){ 
 				String name = p.getShortName();
-				System.out.println(player.getTokenName() + " redeemed " + name);
+				//System.out.println(player.getTokenName() + " redeemed " + name);
 				return "redeem " + name;
 			}
 		}
 
-		if(turnCount == 1000){
-			return "quit";
-		}
-		turnCount++;
 		hasRolled = false;
 		return "done";
 
