@@ -186,7 +186,7 @@ public class TopHat implements Bot {
 
 			//if we have no properties available to mortgage and still a negative balance then declare bankruptcy
 			if (unmortgagedCount == 0 && balance < 0) {
-				System.out.println("Bankrupt");
+				//System.out.println("Bankrupt");
 				return "bankrupt";
 			}
 
@@ -198,7 +198,7 @@ public class TopHat implements Bot {
 					Site s = (Site) p;
 					if(p.getMortgageValue() > debt && !p.isMortgaged() && s.getNumBuildings() == 0){
 						String name = p.getShortName();
-						System.out.println(player.getTokenName() + " mortgaged " + name);
+						//System.out.println(player.getTokenName() + " mortgaged " + name);
 						return "mortgage " + name;
 					}
 
@@ -213,7 +213,7 @@ public class TopHat implements Bot {
 					Site s = (Site) p;
 					if(!p.isMortgaged() && s.getNumBuildings() == 0){
 						String name = p.getShortName();
-						System.out.println(player.getTokenName() + " mortgaged " + name);
+						//System.out.println(player.getTokenName() + " mortgaged " + name);
 						return "mortgage " + name;
 					}
 				}
@@ -227,7 +227,7 @@ public class TopHat implements Bot {
 					site = (Site) p;
 					if(site.hasBuildings()){ 
 						String name = site.getShortName();
-						System.out.println(player.getTokenName() + " dem 1 on " + name);
+						//System.out.println(player.getTokenName() + " dem 1 on " + name);
 						return "demolish " + name + " 1";
 					}
 				} catch (Exception e) {}
@@ -238,7 +238,7 @@ public class TopHat implements Bot {
 			//Mortgage Stations after trying to mortgage other properties and buildings
 			for (Property p : player.getProperties()) {
 				if (!p.isMortgaged() && board.isStation(p.getShortName())) {
-					System.out.println(player.getTokenName() + " mortgaged " + p.getShortName());
+					//System.out.println(player.getTokenName() + " mortgaged " + p.getShortName());
 					return "mortgage " + p.getShortName(); 
 				}
 			}
@@ -250,7 +250,7 @@ public class TopHat implements Bot {
 			//If p is mortgaged and we can afford to redeem it
 			if(p.isMortgaged() && balance > p.getMortgageRemptionPrice() + 100){ 
 				String name = p.getShortName();
-				System.out.println(player.getTokenName() + " redeemed " + name);
+				//System.out.println(player.getTokenName() + " redeemed " + name);
 				return "redeem " + name;
 			}
 		}
