@@ -56,7 +56,7 @@ public class TopHat implements Bot {
 		if(player.isInJail()){
 			if(player.hasGetOutOfJailCard())
 				return "card";
-			//if weve more than 300 balance
+			//if we've more than 300 balance
 			else if(balance > 300) 
 				return "pay";
 			else if(!hasRolled){
@@ -81,7 +81,7 @@ public class TopHat implements Bot {
 				if (!p.isOwned() && !board.isUtility(p.getShortName()) && balance > p.getPrice()) {
 
 					//Price restrictions
-					if(balance >= 300){
+					if(balance >= 250){
 						if(balance > 500){
 							if(balance > 850){
 								if(balance > 1100){
@@ -147,13 +147,13 @@ public class TopHat implements Bot {
 										//System.out.println(player.getTokenName() + " built " + buildNum + " on " + siteShortName);
 										return "build " + siteShortName + " " + buildNum;
 									}
-									
+
 									//Build as many as we can afford up to 3
 									else if (maxToBuild <= buildsNeeded && currentBuildings < 5) {
 										//System.out.println(player.getTokenName() + " built " + maxToBuild + " on " + siteShortName);
 										return "build " + siteShortName + " " + maxToBuild;
 									} 
-									
+
 									//if we can afford more than our ideal of 3, then build more up to the max
 									else if(currentBuildings < 5 && buildsNeeded > 0){
 										//System.out.println(player.getTokenName() + " built " + buildsNeeded + " on " + siteShortName);
@@ -186,12 +186,40 @@ public class TopHat implements Bot {
 
 			//if we have no properties available to mortgage and still a negative balance then declare bankruptcy
 			if (unmortgagedCount == 0 && balance < 0) {
-				//System.out.println("Bankrupt");
+				System.out.println("Bankrupt");
 				return "bankrupt";
 			}
 
 
-			//First demolish buildings, 1 at a time
+			//Mortgaging
+			//See if one property will do, with no houses
+			for(Property p : player.getProperties()){
+				if(board.isSite(p.getShortName())){
+					Site s = (Site) p;
+					if(p.getMortgageValue() > debt && !p.isMortgaged() && s.getNumBuildings() == 0){
+						String name = p.getShortName();
+						System.out.println(player.getTokenName() + " mortgaged " + name);
+						return "mortgage " + name;
+					}
+
+				}
+			}
+
+			//Mortgage properties with no houses. Most expensive first
+			for(int i = player.getProperties().size();i>0;i--){
+				Property p = player.getProperties().get(i);
+				if(board.isProperty(p.getShortName())){
+
+					Site s = (Site) p;
+					if(!p.isMortgaged() && s.getNumBuildings() == 0){
+						String name = p.getShortName();
+						System.out.println(player.getTokenName() + " mortgaged " + name);
+						return "mortgage " + name;
+					}
+				}
+			}
+
+			//Lastly, demolish buildings, 1 at a time
 			for(Property p : player.getProperties()){
 				Site site = null;
 				try {
@@ -199,50 +227,32 @@ public class TopHat implements Bot {
 					site = (Site) p;
 					if(site.hasBuildings()){ 
 						String name = site.getShortName();
-						//System.out.println(player.getTokenName() + " dem 1 on " + name);
+						System.out.println(player.getTokenName() + " dem 1 on " + name);
 						return "demolish " + name + " 1";
 					}
 				} catch (Exception e) {}
 				balance = player.getBalance();
 				if(balance >= 0)break;
 			}
-
-			//Mortgaging
-			//See if one property will do
-			for(Property p : player.getProperties()){
-				if(p.getMortgageValue() > debt && !p.isMortgaged()){
-					String name = p.getShortName();
-					//System.out.println(player.getTokenName() + " mortgaged " + name);
-					return "mortgage " + name;
-				}
-			}
-
-			//Mortgage cheapest first
-			for(Property p : player.getProperties()){
-				if(!p.isMortgaged()){
-					String name = p.getShortName();
-					//System.out.println(player.getTokenName() + " mortgaged " + name);
-					return "mortgage " + name;
-				}
-			}
+			
 		}
-
-		//Redeem our mortgaged properties
+		
+		//Redeem our mortgaged properties, Cheapest first
 		for(Property p : player.getProperties()){
 			//If p is mortgaged and we can afford to redeem it
 			if(p.isMortgaged() && balance > p.getMortgageRemptionPrice() + 100){ 
 				String name = p.getShortName();
-				//System.out.println(player.getTokenName() + " redeemed " + name);
+				System.out.println(player.getTokenName() + " redeemed " + name);
 				return "redeem " + name;
 			}
 		}
-
+		
 		hasRolled = false;
 		return "done";
 
 	}
 
-		//used for fine or chance option
+	//used for fine or chance option
 	public String getDecision () {
 
 
