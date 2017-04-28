@@ -207,8 +207,8 @@ public class TopHat implements Bot {
 
 			//Mortgage properties with no houses. Most expensive first
 			for(int i = player.getProperties().size();i>0;i--){
-				Property p = player.getProperties().get(i);
-				if(board.isProperty(p.getShortName())){
+				Property p = player.getProperties().get(i-1);
+				if(board.isSite(p.getShortName())){
 
 					Site s = (Site) p;
 					if(!p.isMortgaged() && s.getNumBuildings() == 0){
@@ -233,6 +233,14 @@ public class TopHat implements Bot {
 				} catch (Exception e) {}
 				balance = player.getBalance();
 				if(balance >= 0)break;
+			}
+			
+			//Mortgage Stations after trying to mortgage other properties and buildings
+			for (Property p : player.getProperties()) {
+				if (!p.isMortgaged() && board.isStation(p.getShortName())) {
+					System.out.println(player.getTokenName() + " mortgaged " + p.getShortName());
+					return "mortgage " + p.getShortName(); 
+				}
 			}
 			
 		}
